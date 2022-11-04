@@ -15,12 +15,13 @@ from typing import List
 
 
 class TextConfig:
-    def __init__(self, text: str, font: str, size: int, position_x: int, position_y: int) -> None:
+    def __init__(self, text: str, font: str, size: int, position_x: int, position_y: int, color) -> None:
         self.text = text
         self.font = font
         self.size = size
         self.position_x = position_x
         self.position_y = position_y
+        self.color = color
 
 
 def add_transparent_image(background, foreground, x_offset=None, y_offset=None):
@@ -103,8 +104,7 @@ def overlay_image(video_path, image_path, out_path, text_configs: List[TextConfi
 
         for text_config in text_configs:
             font = ImageFont.truetype(text_config.font, text_config.size)  # ("AvenirLTStd-Black.ttf", scale)
-            wtf_is_this = (244, 172, 58)
-            draw.text((text_config.position_x, text_config.position_y), text_config.text, font=font, fill=wtf_is_this)
+            draw.text((text_config.position_x, text_config.position_y), text_config.text, font=font, fill=text_config.color)
         video_frame = im.getim()
 
         out.write(video_frame)
@@ -118,10 +118,17 @@ Generate Video with Image Background -- End
 ***** ***** ***** ***** ***** ***** ***** '''
 
 if __name__ == "__main__":
-    text_config = TextConfig("Hello, Junction!",
-                             "arial.ttf",
+    text_config1 = TextConfig("Hello, ee!",
+                             "fonts/arial.ttf",
                              48,
                              370,
-                             952)
+                             952,
+                              (0,0,0,0))
+    text_config2 = TextConfig("Hello, Denys!",
+                              "fonts/arial.ttf",
+                              48,
+                              400,
+                              700,
+                              (255,255,255,255))
 
-    overlay_image("video/2.mov", "video/Subject.png", "video/out.mp4", [text_config])
+    overlay_image("video/2.mov", "video/Subject.png", "video/out.mp4", [text_config1, text_config2])
