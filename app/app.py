@@ -6,6 +6,8 @@ import datetime
 from overlay_pipeline import TextConfig, TargetResolution, overlay_image
 from multiprocessing import Pool
 
+import config
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -32,16 +34,16 @@ def render_video(input: RenderInput):
                               position_y=input.text_pos_y,
                               color=input.color)
 
-    absolute_path = "/Users/denys/experiments/junction-2022/app/static/video/"
-    relative_path = f'out-{input.metadata["job_id"]}-{input.id}.mp4'
+    absolute_path = config.get_video_folder()
+    file_name = f'out-{input.metadata["job_id"]}-{input.id}.mp4'
     overlay_image("static/video/" + input.metadata["video_path"],
                   "static/video/" + input.metadata["image_path"],
                   position_x=input.image_pos_x,
                   position_y=input.image_pos_y,
-                  out_path=os.path.join(absolute_path, relative_path),
+                  out_path=os.path.join(absolute_path, file_name),
                   text_configs=[text_config1],
                   target_resolution=TargetResolution(target_width=480, target_height=850))
-    return relative_path
+    return file_name
 
 
 def render_videos(metadata):

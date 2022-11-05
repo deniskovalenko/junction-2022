@@ -1,31 +1,11 @@
-<!doctype html>
-<html>
-  <head>
-    <title>Junction 2022 Smartly</title>
-    <style>
-      .load {
-        float: right;
-        width: 300px;
-        border: 1px solid black;
-        margin-left: 10px;
-        margin-bottom: 10px;
-        padding: 10px;
-      }
-      .load th, .load td {
-        padding: 6px;
-        text-align: center;
-      }
-    </style>
+{% extends "frame.html" %}
+{% block content %}
 
-  </head>
-  <body style="background-color: #333333">
+<form action="render_video" method="POST">
+  Video path: <input type="text" name="video_path" value="3_trim.mov">
+  Image path: <input type="text" name="image_path" value="carlos.png">
+  Caption: <input type="text" name="caption" value="Hello World">
+  <input type="submit" value="Submit">
+</form>
 
-    {% block content %}{% endblock %}
-      <form action="render_video" method="POST">
-        Video path: <input type="text" name="video_path" value="3_trim.mov">
-        Image path: <input type="text" name="image_path" value="carlos.png">
-        Caption: <input type="text" name="caption" value="Hello World">
-        <input type="submit" value="Submit">
-      </form>
-  </body>
-</html>
+{% endblock %}

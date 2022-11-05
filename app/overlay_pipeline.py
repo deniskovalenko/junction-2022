@@ -2,11 +2,7 @@
 
 import cv2
 import numpy as np
-import os
 
-##todo make it proper :)
-os.environ["IMAGEIO_FFMPEG_EXE"] = "/Users/denys/Downloads/ffmpeg"
-####
 import PILasOPENCV as Image
 import PILasOPENCV as ImageDraw
 import PILasOPENCV as ImageFont
