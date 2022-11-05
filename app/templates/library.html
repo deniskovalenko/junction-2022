@@ -1,0 +1,66 @@
+{% extends "frame.html" %}
+{% block content %}
+  
+<div class="row">
+  <div class="col-10">
+    <h3>Emoji</h3>
+    {% for image_file in context.library_emoji %}
+    <img src="/library_content/{{image_file}}" width="100px" height="100px" onclick="select_image(this);" name="{{image_file}}"/>
+    {% endfor %}
+    <br/><br/>
+    
+    <h3>People</h3>
+    {% for image_file in context.library_people %}
+    <img src="/library_content/{{image_file}}" width="100px" height="100px" onclick="select_image(this);" name="{{image_file}}"/>
+    {% endfor %}
+    <br/><br/>
+
+    <h3>AI</h3>
+    {% for image_file in context.library_ai %}
+    <img src="/library_content/{{image_file}}" width="100px" height="100px" onclick="select_image(this);" name="{{image_file}}"/>
+    {% endfor %}
+    <br/><br/>
+    
+  </div>
+  <div class="col-2">
+    <button onclick="create_library()" type="button" class="btn btn-success btn-lg btn-block">AI create</button> <br/>
+    <button onclick="variance_library()" type="button" class="btn btn-primary btn-lg btn-block">AI variance</button> <br/>
+    <button onclick="similar_library()" type="button" class="btn btn-primary btn-lg btn-block">AI similar</button> <br/>
+    <button onclick="reload_library()" type="button" class="btn btn-secondary btn-lg btn-block">Reload</button> <br/>
+  </div>
+</div>
+
+<script>
+
+function reload_library(){
+    location.reload(); 
+}
+
+function select_image(img){
+  // Clear selection
+  $('img').each(function(){
+    $(this).css('border', "0px"); 
+  });
+  // Mark clicked image
+  img.style.border = "6px solid red";
+  // Update selection
+  window.history.replaceState(null, null, "?selection="+img.name);
+}
+
+function similar_library(){
+  params = window.location.search;
+  window.location = "/library_similar"+params;
+};
+
+function create_library(){
+  window.location = "/library_create";
+}
+
+function variance_library(){
+  params = window.location.search;
+  window.location = "/library_variance"+params;
+};
+
+</script>
+
+{% endblock %}

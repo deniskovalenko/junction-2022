@@ -1,0 +1,45 @@
+{% extends "frame.html" %}
+{% block content %}
+  
+<img src="/library_content/{{context.ref_image}}" width="100px" height="100px" onclick="select_image(this);" name="{{context.ref_image}}"/>
+
+<hr/>
+
+<div class="row">
+  <div class="col-10">
+    {% for image_file in context.image_list %}
+    <img src="/library_content/{{image_file}}" width="100px" height="100px" onclick="select_image(this);" name="{{image_file}}"/>
+    {% endfor %}
+  </div>
+  <div class="col-2">
+    <button onclick="variance_library()" type="button" class="btn btn-primary btn-lg btn-block">AI variance</button> <br/>
+    <button onclick="similar_library()" type="button" class="btn btn-primary btn-lg btn-block">AI similar</button> <br/>
+    <button onclick="window.location='/library';" type="button" class="btn btn-secondary btn-lg btn-block">Library</button> <br/>
+  </div>
+</div>
+
+<script>
+
+function select_image(img){
+  // Clear selection
+  $('img').each(function(){
+    $(this).css('border', "0px"); 
+  });
+  // Mark clicked image
+  img.style.border = "6px solid red";
+  // Update selection
+  window.history.replaceState(null, null, "?selection="+img.name);
+};
+
+function similar_library(){
+  params = window.location.search;
+  window.location = "/library_similar"+params;
+};
+
+function variance_library(){
+  params = window.location.search;
+  window.location = "/library_variance"+params;
+};
+
+</script>
+{% endblock %}
