@@ -1,5 +1,13 @@
 {% extends "frame.html" %}
 {% block content %}
+<script>
+  let dropArea = document.getElementById('drop-area')
+
+  dropArea.addEventListener('dragenter', handlerFunction, false)
+  dropArea.addEventListener('dragleave', handlerFunction, false)
+  dropArea.addEventListener('dragover', handlerFunction, false)
+  dropArea.addEventListener('drop', handlerFunction, false)
+</script>
 
 <form action="render_video" method="POST">
   Video path: <input type="text" name="video_path" value="3_trim.mov">
@@ -8,6 +16,14 @@
   <input type="submit" value="Submit">
 </form>
 
+
+<div id="drop-area">
+  <form class="my-form">
+    <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
+    <input type="file" id="fileElem" multiple accept="video/*" onchange="handleFiles(this.files)">
+    <label class="button" for="fileElem">Select a video files</label>
+  </form>
+</div>
 <br/>
 <br/>
 <br/>

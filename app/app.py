@@ -104,7 +104,8 @@ def handle_data():
 @app.route('/generated_content')
 def generated_content():
     for dirname, dirnames, filenames in os.walk('static/video'):
-        return render_template('generated_content.html', folders=dirnames)
+        dir_names = sorted(dirnames)
+        return render_template('generated_content.html', folders=dir_names)
 
 @app.route('/videos/<job_id>')
 def videos(job_id):
