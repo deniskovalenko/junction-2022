@@ -1,8 +1,9 @@
-#heavily inspired by https://github.com/anajetli/python_video_editing
+# heavily inspired by https://github.com/anajetli/python_video_editing
 
 import cv2
 import numpy as np
 import os
+
 ##todo make it proper :)
 os.environ["IMAGEIO_FFMPEG_EXE"] = "/Users/denys/Downloads/ffmpeg"
 ####
@@ -12,6 +13,7 @@ import PILasOPENCV as ImageFont
 from typing import List
 
 import logging
+
 logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
                     level=logging.INFO,
                     datefmt='%Y-%m-%d %H:%M:%S')
@@ -85,7 +87,6 @@ def overlay_image(video_path, image_path, position_x, position_y, out_path, text
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter(out_path, fourcc, framespersecond, res)
 
-
     image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
     resolution_reverted_from_video = (90, 180)
     overlay = cv2.resize(image, resolution_reverted_from_video)
@@ -106,8 +107,7 @@ def overlay_image(video_path, image_path, position_x, position_y, out_path, text
         draw = ImageDraw.Draw(im)
 
         for text_config in text_configs:
-            font = ImageFont.truetype(text_config.font, text_config.size)  # ("AvenirLTStd-Black.ttf", scale)
-            draw.text((text_config.position_x, text_config.position_y), text_config.text, font=font, fill=text_config.color)
+            draw_text(draw, text_config)
         video_frame = im.getim()
 
         out.write(video_frame)
@@ -117,23 +117,28 @@ def overlay_image(video_path, image_path, position_x, position_y, out_path, text
     logging.info("done")
 
 
+def draw_text(draw, text_config):
+    font = ImageFont.truetype(text_config.font, text_config.size)  # ("AvenirLTStd-Black.ttf", scale)
+    draw.text((text_config.position_x, text_config.position_y), text_config.text, font=font, fill=text_config.color)
+
+
 ''' ***** ***** ***** ***** ***** ***** *****
 Generate Video with Image Background -- End
 ***** ***** ***** ***** ***** ***** ***** '''
 
 if __name__ == "__main__":
     text_config1 = TextConfig("Hello, Junction!",
-                             "fonts/arial.ttf",
-                             size=36,
-                             position_x=200,
-                             position_y=300,
-                             color=(0,0,0,0))
+                              "fonts/arial.ttf",
+                              size=36,
+                              position_x=200,
+                              position_y=300,
+                              color=(0, 0, 0, 0))
     text_config2 = TextConfig("Hello, Denys!",
                               "fonts/arial.ttf",
                               size=36,
                               position_x=300,
                               position_y=400,
-                              color=(255,255,255,255))
+                              color=(255, 255, 255, 255))
 
     overlay_image("video/3_trim.mov",
                   "video/Subject.png",
