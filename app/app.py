@@ -11,12 +11,14 @@ import config
 app = Flask(__name__)
 
 @app.route('/')
-def index():
-    return render_template('index.html')
+@app.route('/index')
+@app.route('/index/<hidden_path_to_image>')
+def index(hidden_path_to_image=""):
+    return render_template('index.html', hidden_path_to_image=hidden_path_to_image)
 
 
 class RenderInput:
-    def __init__(self, metadata, color, text_pos_x, text_pos_y, id,image_pos_x, image_pos_y):
+    def __init__(self, metadata, color, text_pos_x, text_pos_y, id, image_pos_x, image_pos_y):
         self.metadata = metadata
         self.color = color
         self.text_pos_x = text_pos_x
@@ -24,6 +26,7 @@ class RenderInput:
         self.id=id
         self.image_pos_x=image_pos_x
         self.image_pos_y=image_pos_y
+
 
 def render_video(input: RenderInput):
     fonts = ["static/fonts/arial.ttf", "static/fonts/Gingerbread House.ttf", "static/fonts/Montez-Regular.ttf"]
@@ -95,10 +98,15 @@ def render_videos(metadata):
 
 @app.route('/render_video', methods=['GET', 'POST'])
 def handle_data():
+    print("yo")
     video_path = request.form['video_path']
-    image_path = request.form['image_path']
+    image_path = request.form.get('image_path', None)
+    hidden_path_to_image = request.form.get('hidden_path_to_image', "")
     caption = request.form['caption']
     job_id = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+
+    if hidden_path_to_image != None and hidden_path_to_image != "":
+        image_path = hidden_path_to_image
     metadata = {
         "job_id": job_id,
         "video_path": video_path,
