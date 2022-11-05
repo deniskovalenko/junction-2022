@@ -98,7 +98,7 @@ def overlay_image(video_path, image_path, position_x, position_y, out_path, text
             continue
 
         video_frame = cv2.resize(video_frame, (target_resolution.target_width, target_resolution.target_height))
-        #dealing with flipping of vertical videos.
+        #dealing with flipping and mirroring of vertical videos.
         flipped = cv2.flip(video_frame, 0)
         flipped = cv2.flip(flipped, 1)
         add_transparent_image(flipped, overlay, position_x, position_y)
