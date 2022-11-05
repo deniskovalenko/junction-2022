@@ -1,7 +1,7 @@
 import random
 import sys
 import os
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 import datetime
 from overlay_pipeline import TextConfig, TargetResolution, overlay_image
 from multiprocessing import Pool
@@ -9,12 +9,15 @@ from multiprocessing import Pool
 import config
 
 app = Flask(__name__)
+app.secret_key = "JUNCTION2022"
+
 
 @app.route('/')
-@app.route('/index')
-@app.route('/index/<hidden_path_to_image>')
-def index(hidden_path_to_image=""):
-    return render_template('index.html', hidden_path_to_image=hidden_path_to_image)
+def index():
+    if "hidden_path_to_image" in session.keys():
+        return render_template('index.html', hidden_path_to_image=session["hidden_path_to_image"])
+    else:
+        return render_template('index.html')
 
 
 class RenderInput:
@@ -28,7 +31,7 @@ class RenderInput:
         self.image_pos_y=image_pos_y
 
 
-def render_video(input: RenderInput):
+def generate_video(input: RenderInput):
     fonts = ["static/fonts/arial.ttf", "static/fonts/Gingerbread House.ttf", "static/fonts/Montez-Regular.ttf"]
     font= random.choice(fonts)
     text = input.metadata["caption"]
@@ -91,22 +94,22 @@ def render_videos(metadata):
                           image_pos_y=300
                           )
     with Pool(6) as p:
-        results = p.map(render_video, [input_1, input_2, input_3, input_4, input_5, input_6])
+        results = p.map(generate_video, [input_1, input_2, input_3, input_4, input_5, input_6])
 
     return results
 
 
-@app.route('/render_video', methods=['GET', 'POST'])
-def handle_data():
-    print("yo")
+@app.route('/render_video2', methods=['GET', 'POST'])
+def render_video2():
     video_path = request.form['video_path']
     image_path = request.form.get('image_path', None)
-    hidden_path_to_image = request.form.get('hidden_path_to_image', "")
+    hidden_path_to_image = session.get("hidden_path_to_image", None)
     caption = request.form['caption']
     job_id = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
-    if hidden_path_to_image != None and hidden_path_to_image != "":
+    if hidden_path_to_image is not None and hidden_path_to_image != "":
         image_path = hidden_path_to_image
+        del session["hidden_path_to_image"]
     metadata = {
         "job_id": job_id,
         "video_path": video_path,
@@ -115,7 +118,8 @@ def handle_data():
     }
 
     video_names = render_videos(metadata)
-    return render_template('videos.html', videos=video_names), 422
+    print(request.form)
+    return render_template('videos.html', videos=video_names)
 
 @app.route('/generated_content')
 def generated_content():
