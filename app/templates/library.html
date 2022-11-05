@@ -27,6 +27,7 @@
     <button onclick="variance_library()" type="button" class="btn btn-primary btn-lg btn-block">AI variance</button> <br/>
     <button onclick="similar_library()" type="button" class="btn btn-primary btn-lg btn-block">AI similar</button> <br/>
     <button onclick="reload_library()" type="button" class="btn btn-secondary btn-lg btn-block">Reload</button> <br/>
+    <a id="nagivate_to_index" href="" class="btn btn-success btn-lg btn-block">Select</a> <br/>
   </div>
 </div>
 
@@ -34,6 +35,11 @@
 
 function reload_library(){
     location.reload(); 
+}
+
+function reload_index(){
+    params = window.location.search;
+    $('nagivate_to_index').attr("href", "index/"+params)
 }
 
 function select_image(img){
@@ -45,6 +51,8 @@ function select_image(img){
   img.style.border = "6px solid red";
   // Update selection
   window.history.replaceState(null, null, "?selection="+img.name);
+  //update link
+  $('#nagivate_to_index').attr("href", "index/"+img.name)
 }
 
 function similar_library(){

@@ -19,9 +19,13 @@ app.secret_key = "JUNCTION2022"
 
 
 @app.route('/')
-def index():
-    if "hidden_path_to_image" in session.keys():
-        return render_template('index.html', hidden_path_to_image=session["hidden_path_to_image"])
+@app.route('/index')
+@app.route('/index/<image_id>')
+def index(image_id=None):
+    if image_id is not None:
+        path_to_image = _get_image_file_from_image_id(image_id)
+        session["hidden_path_to_image"] = path_to_image
+        return render_template('index.html', hidden_path_to_image=path_to_image)
     else:
         return render_template('index.html')
 
@@ -59,7 +63,7 @@ def generate_video(input: RenderInput):
     os.makedirs(os.path.join(absolute_path, subfolder), exist_ok=True)
     file_name = subfolder + f'out-{input.id}.mp4'
     overlay_image("static/video/" + input.metadata["video_path"],
-                  "static/video/" + input.metadata["image_path"],
+                  input.metadata["image_path"],
                   position_x=input.image_pos_x,
                   position_y=input.image_pos_y,
                   out_path=os.path.join(absolute_path, file_name),
@@ -105,8 +109,8 @@ def render_videos(metadata):
     return results
 
 
-@app.route('/render_video2', methods=['GET', 'POST'])
-def render_video2():
+@app.route('/index/<image_id>', methods=['POST'])
+def render_video2(image_id=None):
     video_path = request.form['video_path']
     image_path = request.form.get('image_path', None)
     hidden_path_to_image = session.get("hidden_path_to_image", None)
@@ -116,6 +120,8 @@ def render_video2():
     if hidden_path_to_image is not None and hidden_path_to_image != "":
         image_path = hidden_path_to_image
         del session["hidden_path_to_image"]
+    else:
+        image_path =  "static/video/" + image_path
     metadata = {
         "job_id": job_id,
         "video_path": video_path,
