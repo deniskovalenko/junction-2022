@@ -1,9 +1,17 @@
 {% extends "frame.html" %}
 {% block content %}
   
-query!
-
-<hr/>
+<form action="/library_create" method="get">
+<div class="row">
+  <div class="col-10">
+      <input type="text" class="form-control" name="q" placeholder="Enter image description" value="{{context.q}}">
+  </div>
+  <div class="col-2">
+    <button type="submit" class="btn btn-success btn-lg btn-block">Create</button>
+    <br/>
+  </div>
+</div>
+</form>
 
 <div class="row">
   <div class="col-10">

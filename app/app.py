@@ -3,6 +3,7 @@ import os
 import glob
 import datetime
 from multiprocessing import Pool
+import hashlib
 
 from flask import Flask, render_template, request
 from flask import send_file
@@ -130,7 +131,7 @@ def videos(job_id):
 def _get_library_category(base_name):
     parts = base_name.split("/")
     if len(parts) > 0:
-        return parts[0]
+        return parts[-2]
     return "other"
 
 
@@ -140,69 +141,71 @@ def _sample_library_files(category_files, sample_size=30):
     return random.choices(category_files, k=sample_size)
 
 
-def _get_image_code(base_name):
-    return os.path.basename(base_name)
+def _get_image_id(image_file):
+    return hashlib.md5(image_file.encode()).hexdigest()
 
 
 def _get_image_base_map():
     library_folder = config.get_library_folder()
     if not library_folder.endswith("/"):
-        # Fix expected ending char
         library_folder = library_folder + "/"
     library_files = list(glob.iglob(os.path.join(library_folder, '**/*.png'), recursive=True))
-    base_names = [x[len(library_folder):] for x in library_files]
-    return {_get_image_code(f):f for f in base_names}
+    return {_get_image_id(f):f for f in library_files}
 
 
-def _get_image_file_from_base(base_name):
+def _get_image_file_from_image_id(image_id):
     image_base_map = _get_image_base_map()
-    if base_name not in image_base_map:
-        return ""
-    base_path = image_base_map[base_name]
-    library_folder = config.get_library_folder()
-    image_file = os.path.join(library_folder, base_path)
-    return image_file
+    return image_base_map.get(image_id, "")
 
 
-@app.route('/library_content/<base_name>')
-def show_image(base_name):
-    image_file = _get_image_file_from_base(base_name)
+@app.route('/library_content/<image_id>')
+def show_image(image_id):
+    image_file = _get_image_file_from_image_id(image_id)
     return send_file(image_file, mimetype='image/png')
 
 
 @app.route('/library_similar')
 def library_similar():
-    base_name = request.args.get('selection')
-    image_file = _get_image_file_from_base(base_name)
+    image_id = request.args.get('selection')
+    image_file = _get_image_file_from_image_id(image_id)
     sel_image = variance.get_image_from_file(image_file)
     top_rank = variance.variation_find_similar(sel_image)
     context = {
-        'ref_image': base_name,
-        'image_list': [_get_image_code(t[0]) for t in top_rank]
+        'ref_image': image_id,
+        'image_list': [_get_image_id(t[0]) for t in top_rank]
     }
     return render_template('library_reference.html', context=context)
 
 
 @app.route('/library_variance')
 def library_variance():
-    base_name = request.args.get('selection')
-    image_file = _get_image_file_from_base(base_name)
+    image_id = request.args.get('selection')
+    image_file = _get_image_file_from_image_id(image_id)
     sel_image = variance.get_image_from_file(image_file)
     image_variations = variance.get_image_variations(sel_image)
     file_variations = variance.write_variance_images(image_variations)
+    image_id_list = [_get_image_id(f) for f in file_variations]
     context = {
-        'ref_image': base_name,
-        'image_list': file_variations
+        'ref_image': image_id,
+        'image_list': image_id_list
     }
     return render_template('library_reference.html', context=context)
 
 
 @app.route('/library_create')
 def library_create():
-    q = request.args.get('q')    
+    q = request.args.get('q')
+    if q:
+        image_list = variance.get_image_from_text(q)
+        file_list = variance.write_ai_images(image_list)
+        image_id_list = [_get_image_id(f) for f in file_list]
+    else:
+        q = ""
+        image_id_list = []
+
     context = {
         'q': q,
-        'image_list': []
+        'image_list': image_id_list
     }
     return render_template('library_create.html', context=context)
 
@@ -211,11 +214,11 @@ def library_create():
 def library():
     image_base_map = _get_image_base_map()
     category_map = {}
-    for base_name, base_path in image_base_map.items():
+    for image_id, base_path in image_base_map.items():
         category = _get_library_category(base_path)
         if category not in category_map:
             category_map[category] = []
-        category_map[category].append(base_name)
+        category_map[category].append(image_id)
     context = {
         'library_emoji': _sample_library_files(category_map.get('openmoji', [])),
         'library_people': _sample_library_files(category_map.get('people', [])),
