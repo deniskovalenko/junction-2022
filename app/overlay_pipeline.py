@@ -1,5 +1,6 @@
 # heavily inspired by https://github.com/anajetli/python_video_editing
-
+import cProfile
+import re
 import cv2
 import numpy as np
 
@@ -97,8 +98,9 @@ def overlay_image(video_path, image_path, position_x, position_y, out_path, text
             continue
 
         video_frame = cv2.resize(video_frame, (target_resolution.target_width, target_resolution.target_height))
-        #dealing with flipping of vertical videos.
+        #dealing with flipping and mirroring of vertical videos.
         flipped = cv2.flip(video_frame, 0)
+        flipped = cv2.flip(flipped, 1)
         add_transparent_image(flipped, overlay, position_x, position_y)
 
         im = Image.fromarray(cv2.cvtColor(flipped, cv2.COLOR_BGR2RGB))
@@ -129,21 +131,28 @@ Generate Video with Image Background -- End
 if __name__ == "__main__":
 
     text_config1 = TextConfig("Hello, Junction!",
-                              "fonts/arial.ttf",
+                              "static/fonts/arial.ttf",
                               size=36,
                               position_x=200,
                               position_y=300,
                               color=(0, 0, 0, 0))
     text_config2 = TextConfig("Hello, Denys!",
-                              "fonts/arial.ttf",
+                              "static/fonts/arial.ttf",
                               size=36,
                               position_x=300,
                               position_y=400,
                               color=(255, 255, 255, 255))
-    overlay_image("../video/3_trim.mov",
-                  "video/Subject.png",
+    # cProfile.run('''overlay_image("static/video/denys_jump.mov",
+    #               "static/video/Subject.png",
+    #               position_x=300,
+    #               position_y=50,
+    #               out_path="static/video/out.mp4",
+    #               text_configs=[text_config1, text_config2],
+    #               target_resolution=TargetResolution(target_width=850, target_height=480))''')
+    overlay_image("static/video/denys_jump.mov",
+                  "static/video/Subject.png",
                   position_x=300,
                   position_y=50,
-                  out_path="video/out.mp4",
+                  out_path="static/video/out.mp4",
                   text_configs=[text_config1, text_config2],
-                  target_resolution=TargetResolution(target_width=850, target_height=480))
+                  target_resolution=TargetResolution(target_width=480, target_height=850))

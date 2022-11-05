@@ -1,11 +1,41 @@
 {% extends "frame.html" %}
 {% block content %}
+<script>
+  let dropArea = document.getElementById('drop-area')
+  dropArea.addEventListener('dragenter', handlerFunction, false)
+  dropArea.addEventListener('dragleave', handlerFunction, false)
+  dropArea.addEventListener('dragover', handlerFunction, false)
+  dropArea.addEventListener('drop', handlerFunction, false)
 
-<form action="render_video" method="POST">
-  Video path: <input type="text" name="video_path" value="3_trim.mov">
-  Image path: <input type="text" name="image_path" value="carlos.png">
-  Caption: <input type="text" name="caption" value="Hello World">
-  <input type="submit" value="Submit">
-</form>
+  var handleFiles = function(event) {
+     console.log(event);
+  }
 
+
+</script>
+
+<div style="margin: auto">
+    <form action="render_video" method="POST">
+        <div id="drop-area">
+            <input class="btn btn-primary" type="file" id="videoElem" name="video_path" multiple accept="video/*"
+                   onchange="handleFiles(this.files)">
+            <label class="button" for="videoElem">Select base video</label>
+        </div>
+
+        <input class="btn btn-primary" type="file" id="imageElem" name="image_path" multiple accept="image/*"
+               onchange="handleFiles(this.files)">
+        <label class="button" for="imageElem">Select overlay picture</label>
+        <br/>
+        <br/>
+        Caption: <input type="text" name="caption" value="Hello Junction!">
+        <br/>
+        <br/>
+        <input class="btn btn-success" type="submit" value="Generate Video Variants!">
+    </form>
+
+    <br/>
+    <br/>
+    <br/>
+    <a class="btn btn-primary" href="/generated_content">Check out generated videos library!</a>
+</div>
 {% endblock %}

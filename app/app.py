@@ -30,17 +30,27 @@ class RenderInput:
         self.image_pos_x=image_pos_x
         self.image_pos_y=image_pos_y
 
-
 def render_video(input: RenderInput):
-    text_config1 = TextConfig(input.metadata["caption"],
-                              "static/fonts/arial.ttf",
-                              size=50,
+    fonts = ["static/fonts/arial.ttf", "static/fonts/Gingerbread House.ttf", "static/fonts/Montez-Regular.ttf"]
+    font= random.choice(fonts)
+    text = input.metadata["caption"]
+    font_size = 50
+    if len(text) > 15:
+        font_size = 36
+    elif len(text) > 25:
+        font_size = 24
+
+    text_config1 = TextConfig(text,
+                              font=font,
+                              size=font_size,
                               position_x=input.text_pos_x,
                               position_y=input.text_pos_y,
                               color=input.color)
 
     absolute_path = config.get_video_folder()
-    file_name = f'out-{input.metadata["job_id"]}-{input.id}.mp4'
+    subfolder = f'result-{input.metadata["job_id"]}/'
+    os.makedirs(os.path.join(absolute_path, subfolder), exist_ok=True)
+    file_name = subfolder + f'out-{input.id}.mp4'
     overlay_image("static/video/" + input.metadata["video_path"],
                   "static/video/" + input.metadata["image_path"],
                   position_x=input.image_pos_x,
@@ -54,12 +64,12 @@ def render_video(input: RenderInput):
 def render_videos(metadata):
     input_1 = RenderInput(metadata=metadata,
                           color=(255, 255, 255, 255),
-                          text_pos_x=70,
+                          text_pos_x=30,
                           text_pos_y=600,
                           id=1,
                           image_pos_x=50,
                           image_pos_y=50)
-    input_2 = RenderInput(metadata=metadata, color=(0, 0, 0, 0), text_pos_x=100, text_pos_y=600, id=2,
+    input_2 = RenderInput(metadata=metadata, color=(0, 0, 0, 0), text_pos_x=40, text_pos_y=600, id=2,
                           image_pos_x=70,
                           image_pos_y=600
                           )
@@ -69,16 +79,16 @@ def render_videos(metadata):
                           )
     input_4 = RenderInput(metadata=metadata,
                           color=(333, 22, 11, 255),
-                          text_pos_x=70,
+                          text_pos_x=10,
                           text_pos_y=300,
                           id=4,
                           image_pos_x=400,
                           image_pos_y=700)
-    input_5 = RenderInput(metadata=metadata, color=(123,90, 0, 0), text_pos_x=70, text_pos_y=300, id=5,
+    input_5 = RenderInput(metadata=metadata, color=(123,90, 0, 0), text_pos_x=30, text_pos_y=300, id=5,
                           image_pos_x=200,
                           image_pos_y=100
                           )
-    input_6 = RenderInput(metadata=metadata, color=(300, 0, 200, 0), text_pos_x=200, text_pos_y=400, id=6,
+    input_6 = RenderInput(metadata=metadata, color=(300, 0, 200, 0), text_pos_x=10, text_pos_y=400, id=6,
                           image_pos_x=400,
                           image_pos_y=300
                           )
@@ -104,11 +114,17 @@ def handle_data():
     video_names = render_videos(metadata)
     return render_template('videos.html', videos=video_names), 422
 
+@app.route('/generated_content')
+def generated_content():
+    for dirname, dirnames, filenames in os.walk('static/video'):
+        dir_names = sorted(dirnames)
+        return render_template('generated_content.html', folders=dir_names)
 
 @app.route('/videos/<job_id>')
 def videos(job_id):
-    video_list = [f'{job_id}-{x}.mp4' for x in range(1,7)]
-    return render_template('videos.html', videos=video_list)
+    filenames = os.listdir(os.path.join("static/video", job_id))
+    video_list = [f'{job_id}/{filename}' for filename in filenames]
+    return render_template('videos.html', videos=video_list, project_directory=job_id)
 
 
 def _get_library_category(base_name):
