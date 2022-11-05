@@ -4,10 +4,10 @@
 <div class="grid" style="margin: auto width: 80%" data-masonry='{ "itemSelector": ".grid-item", "columnWidth": 200 }'>
     {% for video in videos %}
     <div class="grid-item">
+        <a href={{url_for('static', filename='video/' )}}{{video}} download>Download video</a>
         <video width="500" height="600" autoplay="true" muted controls>
             <source src={{url_for('static', filename='video/' )}}{{video}} type="video/mp4">
             Your browser does not support the video tag.
-            <a href={{url_for('static', filename='video/' )}}{{video}} download>Download video</a>
         </video>
     </div>
     {% endfor %}

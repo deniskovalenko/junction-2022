@@ -35,7 +35,9 @@ def render_video(input: RenderInput):
                               color=input.color)
 
     absolute_path = config.get_video_folder()
-    file_name = f'out-{input.metadata["job_id"]}-{input.id}.mp4'
+    subfolder = f'result-{input.metadata["job_id"]}/'
+    os.makedirs(os.path.join(absolute_path, subfolder), exist_ok=True)
+    file_name = subfolder + f'out-{input.id}.mp4'
     overlay_image("static/video/" + input.metadata["video_path"],
                   "static/video/" + input.metadata["image_path"],
                   position_x=input.image_pos_x,
@@ -102,5 +104,8 @@ def handle_data():
 
 @app.route('/videos/<job_id>')
 def videos(job_id):
+    # if job_id is None or job_id == "":
+    #     result_sets = find_folders()
+
     video_list = [f'{job_id}-{x}.mp4' for x in range(1,7)]
     return render_template('videos.html', videos=video_list)
