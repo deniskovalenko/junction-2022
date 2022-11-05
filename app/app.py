@@ -101,11 +101,13 @@ def handle_data():
     video_names = render_videos(metadata)
     return render_template('videos.html', videos=video_names), 422
 
+@app.route('/generated_content')
+def generated_content():
+    for dirname, dirnames, filenames in os.walk('static/video'):
+        return render_template('generated_content.html', folders=dirnames)
 
 @app.route('/videos/<job_id>')
 def videos(job_id):
-    # if job_id is None or job_id == "":
-    #     result_sets = find_folders()
-
-    video_list = [f'{job_id}-{x}.mp4' for x in range(1,7)]
+    filenames = os.listdir(os.path.join("static/video", job_id))
+    video_list = [f'{job_id}/{filename}' for filename in filenames]
     return render_template('videos.html', videos=video_list)

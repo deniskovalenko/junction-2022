@@ -1,0 +1,10 @@
+{% extends "frame.html" %}
+{% block content %}
+<ul>
+ {% for directory in folders %}
+    <li>
+      <a href='/videos/{{directory}}'>{{directory}}</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
