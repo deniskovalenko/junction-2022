@@ -102,15 +102,3 @@ def handle_data():
 def videos(job_id):
     video_list = [f'{job_id}-{x}.mp4' for x in range(1,7)]
     return render_template('videos.html', videos=video_list)
-
-#
-# @app.before_first_request
-# def before_first_request():
-#     threading.Thread(target=update_load).start()
-
-
-# def update_load():
-#     with app.app_context():
-#         while True:
-#             time.sleep(5)
-#             turbo.push(turbo.replace(render_template('loadavg.html'), 'load'))
