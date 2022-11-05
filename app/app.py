@@ -24,6 +24,11 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/videos')
+def videos():
+    return render_template('videos.html', parameters=["3.mov"])
+
+
 @app.route('/render_video', methods=['GET', 'POST'])
 def handle_data():
     video_path = request.form['video_path']
