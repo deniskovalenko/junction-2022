@@ -101,16 +101,18 @@ def overlay_image(video_path, image_path, position_x, position_y, out_path, text
             continue
 
         video_frame = cv2.resize(video_frame, (target_resolution.target_width, target_resolution.target_height))
-        add_transparent_image(video_frame, overlay, position_x, position_y)
+        #dealing with flipping of vertical videos.
+        flipped = cv2.flip(video_frame, 0)
+        add_transparent_image(flipped, overlay, position_x, position_y)
 
-        im = Image.fromarray(cv2.cvtColor(video_frame, cv2.COLOR_BGR2RGB))
+        im = Image.fromarray(cv2.cvtColor(flipped, cv2.COLOR_BGR2RGB))
         draw = ImageDraw.Draw(im)
 
         for text_config in text_configs:
             draw_text(draw, text_config)
-        video_frame = im.getim()
+        flipped = im.getim()
 
-        out.write(video_frame)
+        out.write(flipped)
 
     video.release()
     out.release()
