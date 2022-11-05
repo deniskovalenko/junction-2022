@@ -40,7 +40,7 @@ def render_video(input: RenderInput):
                   position_y=input.image_pos_y,
                   out_path=os.path.join(absolute_path, relative_path),
                   text_configs=[text_config1],
-                  target_resolution=TargetResolution(target_width=480, target_height=850))
+                  target_resolution=TargetResolution(target_width=800, target_height=480))
     return relative_path
 
 
@@ -64,14 +64,14 @@ def render_videos(metadata):
                           color=(333, 22, 11, 255),
                           text_pos_x=200,
                           text_pos_y=300,
-                          id=1,
+                          id=4,
                           image_pos_x=300,
                           image_pos_y=50)
-    input_5 = RenderInput(metadata=metadata, color=(123,90, 0, 0), text_pos_x=200, text_pos_y=300, id=2,
+    input_5 = RenderInput(metadata=metadata, color=(123,90, 0, 0), text_pos_x=200, text_pos_y=300, id=5,
                           image_pos_x=200,
                           image_pos_y=100
                           )
-    input_6 = RenderInput(metadata=metadata, color=(300, 0, 200, 0), text_pos_x=200, text_pos_y=400, id=3,
+    input_6 = RenderInput(metadata=metadata, color=(300, 0, 200, 0), text_pos_x=200, text_pos_y=400, id=6,
                           image_pos_x=400,
                           image_pos_y=300
                           )
