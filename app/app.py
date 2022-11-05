@@ -83,7 +83,7 @@ def render_videos(metadata):
                           image_pos_x=200,
                           image_pos_y=100
                           )
-    input_6 = RenderInput(metadata=metadata, color=(300, 0, 200, 0), text_pos_x=50, text_pos_y=400, id=6,
+    input_6 = RenderInput(metadata=metadata, color=(300, 0, 200, 0), text_pos_x=10, text_pos_y=400, id=6,
                           image_pos_x=400,
                           image_pos_y=300
                           )
@@ -119,4 +119,4 @@ def generated_content():
 def videos(job_id):
     filenames = os.listdir(os.path.join("static/video", job_id))
     video_list = [f'{job_id}/{filename}' for filename in filenames]
-    return render_template('videos.html', videos=video_list)
+    return render_template('videos.html', videos=video_list, project_directory=job_id)
