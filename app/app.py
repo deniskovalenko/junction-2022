@@ -75,7 +75,7 @@ def render_videos(metadata):
                           image_pos_x=400,
                           image_pos_y=300
                           )
-    with Pool(4) as p:
+    with Pool(6) as p:
         results = p.map(render_video, [input_1, input_2, input_3, input_4, input_5, input_6])
 
     return results
