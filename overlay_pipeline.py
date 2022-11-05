@@ -126,7 +126,10 @@ def draw_text(draw, text_config):
 Generate Video with Image Background -- End
 ***** ***** ***** ***** ***** ***** ***** '''
 
+
+
 if __name__ == "__main__":
+
     text_config1 = TextConfig("Hello, Junction!",
                               "fonts/arial.ttf",
                               size=36,
@@ -139,7 +142,6 @@ if __name__ == "__main__":
                               position_x=300,
                               position_y=400,
                               color=(255, 255, 255, 255))
-
     overlay_image("video/3_trim.mov",
                   "video/Subject.png",
                   position_x=300,

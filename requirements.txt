@@ -2,3 +2,4 @@ opencv-python==4.6.0.66
 moviepy==1.0.3
 PILasOPENCV==2.7
 matplotlib
+Turbo-Flask
