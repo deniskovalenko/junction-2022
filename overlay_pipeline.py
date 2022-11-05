@@ -6,12 +6,15 @@ import os
 ##todo make it proper :)
 os.environ["IMAGEIO_FFMPEG_EXE"] = "/Users/denys/Downloads/ffmpeg"
 ####
-import moviepy.editor as mpe
-import matplotlib.pyplot as plt
 import PILasOPENCV as Image
 import PILasOPENCV as ImageDraw
 import PILasOPENCV as ImageFont
 from typing import List
+
+import logging
+logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
+                    level=logging.INFO,
+                    datefmt='%Y-%m-%d %H:%M:%S')
 
 
 class TextConfig:
@@ -70,11 +73,9 @@ def add_transparent_image(background, foreground, x_offset=None, y_offset=None):
     background[bg_y:bg_y + h, bg_x:bg_x + w] = composite
 
 
-
-
-
-def overlay_image(video_path, image_path, out_path, text_configs: List[TextConfig],
+def overlay_image(video_path, image_path, position_x, position_y, out_path, text_configs: List[TextConfig],
                   target_resolution: TargetResolution):
+    logging.info('Starting to process')
     video = cv2.VideoCapture(video_path)
 
     # videowriter
@@ -86,10 +87,11 @@ def overlay_image(video_path, image_path, out_path, text_configs: List[TextConfi
 
 
     image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
-    overlay = cv2.resize(image, (target_resolution.target_height, target_resolution.target_width), fx=1, fy=1)
+    resolution_reverted_from_video = (90, 180)
+    overlay = cv2.resize(image, resolution_reverted_from_video)
 
     done = False
-
+    logging.info('While loop')
     while not done:
         ret, video_frame = video.read()
 
@@ -98,7 +100,7 @@ def overlay_image(video_path, image_path, out_path, text_configs: List[TextConfi
             continue
 
         video_frame = cv2.resize(video_frame, (target_resolution.target_width, target_resolution.target_height))
-        add_transparent_image(video_frame, overlay, 0, -20)
+        add_transparent_image(video_frame, overlay, position_x, position_y)
 
         im = Image.fromarray(cv2.cvtColor(video_frame, cv2.COLOR_BGR2RGB))
         draw = ImageDraw.Draw(im)
@@ -112,6 +114,7 @@ def overlay_image(video_path, image_path, out_path, text_configs: List[TextConfi
 
     video.release()
     out.release()
+    logging.info("done")
 
 
 ''' ***** ***** ***** ***** ***** ***** *****
@@ -119,21 +122,23 @@ Generate Video with Image Background -- End
 ***** ***** ***** ***** ***** ***** ***** '''
 
 if __name__ == "__main__":
-    text_config1 = TextConfig("Hello, ee!",
+    text_config1 = TextConfig("Hello, Junction!",
                              "fonts/arial.ttf",
-                             36,
-                             200,
-                             300,
-                              (0,0,0,0))
+                             size=36,
+                             position_x=200,
+                             position_y=300,
+                             color=(0,0,0,0))
     text_config2 = TextConfig("Hello, Denys!",
                               "fonts/arial.ttf",
-                              36,
-                              300,
-                              400,
-                              (255,255,255,255))
+                              size=36,
+                              position_x=300,
+                              position_y=400,
+                              color=(255,255,255,255))
 
-    overlay_image("video/2.mov",
+    overlay_image("video/3_trim.mov",
                   "video/Subject.png",
-                  "video/out.mp4",
-                  [text_config1, text_config2],
+                  position_x=300,
+                  position_y=50,
+                  out_path="video/out.mp4",
+                  text_configs=[text_config1, text_config2],
                   target_resolution=TargetResolution(target_width=850, target_height=480))
