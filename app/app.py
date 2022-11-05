@@ -26,7 +26,7 @@ def index():
 
 @app.route('/videos')
 def videos():
-    return render_template('videos.html', parameters=["3.mov"])
+    return render_template('videos.html', videos=["3.mov", "out.mp4"])
 
 
 @app.route('/render_video', methods=['GET', 'POST'])
@@ -36,7 +36,7 @@ def handle_data():
     caption = request.form['caption']
     output = video_path + image_path + caption
     print(output)
-    return render_template('videos.html', parameters=output), 422
+    return render_template('videos.html', videos=['3.mov']), 422
 
 
 
