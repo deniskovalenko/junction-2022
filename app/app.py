@@ -27,7 +27,7 @@ def index(image_id=None):
         session["hidden_path_to_image"] = path_to_image
         return render_template('index.html', hidden_path_to_image=path_to_image)
     else:
-        return render_template('index.html')
+        return render_template('index.html', hidden_path_to_image=None)
 
 
 class RenderInput:

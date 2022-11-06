@@ -4,7 +4,7 @@
 </script>
 
 <div style="margin: auto">
-    <form method="POST">
+    <form action="/index/eee" method="POST">
         <div id="drop-area">
             <input class="btn btn-primary" type="file" id="videoElem" name="video_path" multiple accept="video/*"
                    onchange="handleFiles(this.files)">
@@ -13,7 +13,11 @@
         <input class="btn btn-primary" type="file" id="imageElem" name="image_path" multiple accept="image/*"
                onchange="handleFiles(this.files)">
         <label class="button" for="imageElem">Select overlay picture</label>
+        {% if hidden_path_to_image != None %}
+        <br/><br/>
         <label>{{hidden_path_to_image}}</label>
+        <a class="btn btn-default" href="/index">Clear</a>
+        {% endif %}
         <br/>
         <br/>
         Caption: <input type="text" name="caption" value="Hello Junction!">
