@@ -23,11 +23,10 @@ app.secret_key = "JUNCTION2022"
 @app.route('/index/<image_id>')
 def index(image_id=None):
     if image_id is not None:
-        path_to_image = _get_image_file_from_image_id(image_id)
-        session["hidden_path_to_image"] = path_to_image
-        return render_template('index.html', hidden_path_to_image=path_to_image)
+        session["hidden_image_id"] = image_id
+        return render_template('index.html', hidden_image_id=image_id)
     else:
-        return render_template('index.html', hidden_path_to_image=None)
+        return render_template('index.html', hidden_image_id=None)
 
 
 class RenderInput:
@@ -113,13 +112,14 @@ def render_videos(metadata):
 def render_video2(image_id=None):
     video_path = request.form['video_path']
     image_path = request.form.get('image_path', None)
-    hidden_path_to_image = session.get("hidden_path_to_image", None)
+    hidden_image_id = session.get("hidden_image_id", None)
+    hidden_path_to_image = _get_image_file_from_image_id(hidden_image_id)
     caption = request.form['caption']
     job_id = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
     if hidden_path_to_image is not None and hidden_path_to_image != "":
         image_path = hidden_path_to_image
-        del session["hidden_path_to_image"]
+        del session["hidden_image_id"]
     else:
         image_path =  "static/video/" + image_path
     metadata = {

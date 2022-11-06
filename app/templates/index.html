@@ -1,36 +1,41 @@
 {% extends "frame.html" %}
 {% block content %}
-<script>
-</script>
 
-<div style="margin: auto">
-    <form action="/index/eee" method="POST">
+<div class="container">
+<form action="/index/eee" method="POST">
+<div class="row">
+    <div class="col-6">
         <div id="drop-area">
+            <label class="button" for="videoElem">Select base video:</label>
             <input class="btn btn-primary" type="file" id="videoElem" name="video_path" multiple accept="video/*"
                    onchange="handleFiles(this.files)">
-            <label class="button" for="videoElem">Select base video</label>
         </div>
-        <input class="btn btn-primary" type="file" id="imageElem" name="image_path" multiple accept="image/*"
-               onchange="handleFiles(this.files)">
-        <label class="button" for="imageElem">Select overlay picture</label>
-        {% if hidden_path_to_image != None %}
-        <br/><br/>
-        <label>{{hidden_path_to_image}}</label>
-        <a class="btn btn-default" href="/index">Clear</a>
+    </div>
+    <div class="col-6">
+        {% if hidden_image_id %}
+            <img src="/library_content/{{hidden_image_id}}" width="56px" height="56px" name="{{hidden_image_id}}"/>
+            <a class="btn btn-default" href="/index">Clear</a>
+        {% else %}
+            <label class="button" for="imageElem">Select overlay picture:</label>
+            <input class="btn btn-primary" type="file" id="imageElem" name="image_path" multiple accept="image/*"
+                onchange="handleFiles(this.files)">
         {% endif %}
-        <br/>
-        <br/>
-        Caption: <input type="text" name="caption" value="Hello Junction!">
-        <br/>
-        <br/>
-        <input class="btn btn-success" type="submit" value="Generate Video Variants">
-    </form>
-
-    <br/>
-    <br/>
-    <a class="btn btn-success" href="/library">Generate Content</a>
-    <br/>
-    <br/>
-    <a class="btn btn-primary" href="/generated_content">Check out generated videos library</a>
+    </div>
 </div>
+<div class="row">
+    <div class="col-12">
+        <label class="button" for="videoCaption">Caption:</label>
+        <input type="text" id="videoCaption" name="caption" value="Hello Junction!" class="form-control">
+    </div>
+    <div class="col-6"></div>
+</div>
+<br/><br/>
+<center>
+    <a class="btn btn-primary" href="/library">AI library</a>
+    <a class="btn btn-primary" href="/generated_content">Videos library</a>
+    <input class="btn btn-success" type="submit" value="Generate Video Variants">
+</center>
+</form>
+</div>
+
 {% endblock %}
