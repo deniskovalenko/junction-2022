@@ -1,4 +1,5 @@
 # heavily inspired by https://github.com/anajetli/python_video_editing
+
 import cProfile
 import re
 import cv2
@@ -74,11 +75,13 @@ def add_transparent_image(background, foreground, x_offset=None, y_offset=None):
 
 def overlay_image(video_path, image_path, position_x, position_y, out_path, text_configs: List[TextConfig],
                   target_resolution: TargetResolution):
-    logging.info('Starting to process')
-    video = cv2.VideoCapture(video_path)
 
-    # videowriter
+    logging.info(f'Starting to process: {video_path}')
+    
+    # Load video
+    video = cv2.VideoCapture(video_path)
     framespersecond = float(video.get(cv2.CAP_PROP_FPS))
+    
     # todo can be smaller
     res = (target_resolution.target_width, target_resolution.target_height)
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
@@ -122,12 +125,6 @@ def draw_text(draw, text_config):
     draw.text((text_config.position_x, text_config.position_y), text_config.text, font=font, fill=text_config.color)
 
 
-''' ***** ***** ***** ***** ***** ***** *****
-Generate Video with Image Background -- End
-***** ***** ***** ***** ***** ***** ***** '''
-
-
-
 if __name__ == "__main__":
 
     text_config1 = TextConfig("Hello, Junction!",
@@ -142,13 +139,6 @@ if __name__ == "__main__":
                               position_x=300,
                               position_y=400,
                               color=(255, 255, 255, 255))
-    # cProfile.run('''overlay_image("static/video/denys_jump.mov",
-    #               "static/video/Subject.png",
-    #               position_x=300,
-    #               position_y=50,
-    #               out_path="static/video/out.mp4",
-    #               text_configs=[text_config1, text_config2],
-    #               target_resolution=TargetResolution(target_width=850, target_height=480))''')
     overlay_image("static/video/denys_jump.mov",
                   "static/video/Subject.png",
                   position_x=300,

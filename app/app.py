@@ -1,6 +1,6 @@
 import random
 import os
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request
 import glob
 import datetime
 from multiprocessing import Pool
@@ -8,6 +8,8 @@ import hashlib
 
 from flask import Flask, render_template, request
 from flask import send_file
+from flask import redirect
+from flask import flash
 
 from overlay_pipeline import TextConfig, TargetResolution, overlay_image
 import config
@@ -19,14 +21,60 @@ app.secret_key = "JUNCTION2022"
 
 
 @app.route('/')
-@app.route('/index')
-@app.route('/index/<image_id>')
-def index(image_id=None):
-    if image_id is not None:
-        session["hidden_image_id"] = image_id
-        return render_template('index.html', hidden_image_id=image_id)
+def index_bar():
+    return redirect("/index")
+
+
+@app.route('/index', methods=['GET', 'POST'])
+def index():
+
+    if request.method == 'POST':
+        
+        # Video
+        if 'video_selection' not in request.files or request.files['video_selection'].filename == '':
+            flash('Wrong video selection ...')
+            return redirect(request.url)
+        video_selection = request.files['video_selection']
+        video_name = video_selection.filename
+        base_folder = config.get_video_folder()
+        video_path = os.path.join(base_folder, video_name)
+        video_selection.save(video_path)
+
+        # Image
+        image_id = request.form.get('hidden_image_id', None)
+        if image_id is not None:
+            # Already exist, just recover the path
+            image_path = _get_image_file_from_image_id(image_id)
+        else:
+            if 'image_selection' not in request.files or request.files['image_selection'].filename == '':
+                flash('Wrong image selection ...')
+                return redirect(request.url)
+            image_selection = request.files['image_selection']
+            # Save image
+            image_name = image_selection.filename
+            base_folder = config.get_video_folder()
+            image_path = os.path.join(base_folder, image_name)
+            image_selection.save(image_path)
+
+        # Text
+        caption = request.form['caption']
+
+        # Job configuration
+        job_id = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        metadata = {
+            "job_id": job_id,
+            "video_path": video_path,
+            "image_path": image_path,
+            "caption": caption
+        }
+        video_list = render_videos(metadata)
+        videos = {f'video_{idx}':filename for idx,filename in enumerate(video_list)}
+        return render_template('videos.html', videos=videos, project_directory=job_id), 422
+
     else:
-        return render_template('index.html', hidden_image_id=None)
+        # Get request
+        image_id = request.args.get('selection', None)    
+        return render_template('index.html', hidden_image_id=image_id)
 
 
 class RenderInput:
@@ -41,6 +89,7 @@ class RenderInput:
 
 
 def generate_video(input: RenderInput):
+    
     fonts = ["static/fonts/arial.ttf", "static/fonts/Gingerbread House.ttf", "static/fonts/Montez-Regular.ttf"]
     font= random.choice(fonts)
     text = input.metadata["caption"]
@@ -58,11 +107,14 @@ def generate_video(input: RenderInput):
                               color=input.color)
 
     absolute_path = config.get_video_folder()
-    subfolder = f'result-{input.metadata["job_id"]}/'
+    subfolder = f'result-{input.metadata["job_id"]}'
     os.makedirs(os.path.join(absolute_path, subfolder), exist_ok=True)
-    file_name = subfolder + f'out-{input.id}.mp4'
-    overlay_image("static/video/" + input.metadata["video_path"],
-                  input.metadata["image_path"],
+
+    file_name = os.path.join(subfolder, f'out-{input.id}.mp4')
+    video_path = os.path.join("static/video", input.metadata["video_path"])
+    image_path = input.metadata["image_path"]
+
+    overlay_image( video_path, image_path,
                   position_x=input.image_pos_x,
                   position_y=input.image_pos_y,
                   out_path=os.path.join(absolute_path, file_name),
@@ -108,41 +160,19 @@ def render_videos(metadata):
     return results
 
 
-@app.route('/index/<image_id>', methods=['POST'])
-def render_video2(image_id=None):
-    video_path = request.form['video_path']
-    image_path = request.form.get('image_path', None)
-    hidden_image_id = session.get("hidden_image_id", None)
-    hidden_path_to_image = _get_image_file_from_image_id(hidden_image_id)
-    caption = request.form['caption']
-    job_id = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-
-    if hidden_path_to_image is not None and hidden_path_to_image != "":
-        image_path = hidden_path_to_image
-        del session["hidden_image_id"]
-    else:
-        image_path =  "static/video/" + image_path
-    metadata = {
-        "job_id": job_id,
-        "video_path": video_path,
-        "image_path": image_path,
-        "caption": caption
-    }
-
-    video_names = render_videos(metadata)
-    return render_template('videos.html', videos=video_names), 422
-
 @app.route('/generated_content')
 def generated_content():
     for dirname, dirnames, filenames in os.walk('static/video'):
         dir_names = sorted(dirnames)
         return render_template('generated_content.html', folders=dir_names)
 
+
 @app.route('/videos/<job_id>')
 def videos(job_id):
-    filenames = os.listdir(os.path.join("static/video", job_id))
-    video_list = [f'{job_id}/{filename}' for filename in filenames]
-    return render_template('videos.html', videos=video_list, project_directory=job_id)
+    base_path = config.get_video_folder()
+    filenames = os.listdir(os.path.join(base_path, job_id))
+    videos = {f'video_{idx}':os.path.join(job_id, filename) for idx,filename in enumerate(filenames)}
+    return render_template('videos.html', videos=videos, project_directory=job_id)
 
 
 def _get_library_category(base_name):

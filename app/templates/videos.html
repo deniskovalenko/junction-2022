@@ -1,31 +1,91 @@
 {% extends "frame.html" %}
 {% block content %}
 
-<br/>
+<div class="container">
 <b>{{project_directory}}</b>
-<br/>
-<div class="grid" style="margin: auto width: 80%" data-masonry='{ "itemSelector": ".grid-item", "columnWidth": 200 }'>
-    <div class="card-deck">
-        {% for video in videos %}
-        <div class="card grid-item">
-            <div class="card-body">
+
+<!-- row 1 -->
+<div class="row">
+    <div class="col-4">
+        <div class="card-body">
             <video width="312" height="416" autoplay="true" muted controls>
-                <source src={{url_for('static', filename='video/' )}}{{video}} type="video/mp4">
+                <source src={{url_for('static', filename='video/' )}}{{videos.video_0}} type="video/mp4">
                 Your browser does not support the video tag.
             </video>
             <center>
-                <a class="btn btn-success" href={{url_for('static', filename='video/' )}}{{video}} download>Download video</a>
+                <a class="btn btn-success" href={{url_for('static', filename='video/' )}}{{videos.video_0}} download>Download video</a>
             </center>
-            </div>
-        </div>
-        {% endfor %}
+        </div>        
+    </div>
+    <div class="col-4">
+        <div class="card-body">
+            <video width="312" height="416" autoplay="true" muted controls>
+                <source src={{url_for('static', filename='video/' )}}{{videos.video_1}} type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <center>
+                <a class="btn btn-success" href={{url_for('static', filename='video/' )}}{{videos.video_1}} download>Download video</a>
+            </center>
+        </div>        
+    </div>
+    <div class="col-4">
+        <div class="card-body">
+            <video width="312" height="416" autoplay="true" muted controls>
+                <source src={{url_for('static', filename='video/' )}}{{videos.video_2}} type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <center>
+                <a class="btn btn-success" href={{url_for('static', filename='video/' )}}{{videos.video_2}} download>Download video</a>
+            </center>
+        </div>        
     </div>
 </div>
-<br/>
 
+<!-- row 2 -->
+<div class="row">
+    <div class="col-4">
+        <div class="card-body">
+            <video width="312" height="416" autoplay="true" muted controls>
+                <source src={{url_for('static', filename='video/' )}}{{videos.video_3}} type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <center>
+                <a class="btn btn-success" href={{url_for('static', filename='video/' )}}{{videos.video_3}} download>Download video</a>
+            </center>
+        </div>        
+    </div>
+    <div class="col-4">
+        <div class="card-body">
+            <video width="312" height="416" autoplay="true" muted controls>
+                <source src={{url_for('static', filename='video/' )}}{{videos.video_4}} type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <center>
+                <a class="btn btn-success" href={{url_for('static', filename='video/' )}}{{videos.video_4}} download>Download video</a>
+            </center>
+        </div>        
+    </div>
+    <div class="col-4">
+        <div class="card-body">
+            <video width="312" height="416" autoplay="true" muted controls>
+                <source src={{url_for('static', filename='video/' )}}{{videos.video_5}} type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <center>
+                <a class="btn btn-success" href={{url_for('static', filename='video/' )}}{{videos.video_5}} download>Download video</a>
+            </center>
+        </div>        
+    </div>
+</div>
+
+<br/>
+<h2>Trending song suggestion:</h2>
 <div class="container">
-<h1>Trending song matching your video:</h1>
-<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/3C7sz0HzEs8NGsHbNC5clu?utm_source=generator" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/3C7sz0HzEs8NGsHbNC5clu?utm_source=generator" 
+        width="100%" height="152" frameBorder="0" allowfullscreen="" 
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy">
+    </iframe>
+</div>
 </div>
 
 {% endblock %}
