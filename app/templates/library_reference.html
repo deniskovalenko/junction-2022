@@ -30,7 +30,7 @@ function select_image(img){
   // Update selection
   window.history.replaceState(null, null, "?selection="+img.name);
   //update link
-  $('#nagivate_to_index').attr("href", "index/"+img.name);
+  $('#nagivate_to_index').attr("href", "index?selection="+img.name);
 };
 
 function similar_library(){

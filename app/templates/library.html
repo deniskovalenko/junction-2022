@@ -37,11 +37,6 @@ function reload_library(){
     location.reload(); 
 }
 
-function reload_index(){
-    params = window.location.search;
-    $('nagivate_to_index').attr("href", "index/"+params)
-}
-
 function select_image(img){
   // Clear selection
   $('img').each(function(){
