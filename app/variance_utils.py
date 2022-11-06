@@ -18,6 +18,7 @@ from torchvision.transforms.functional import resize
 
 # Fixed size to limit API usage
 SIZE = "256x256"
+N_IMAGES = 5
 
 load_dotenv()
 token = os.getenv("DALLE_TOKEN")
@@ -154,10 +155,10 @@ def variation_find_similar(image):
     return [(top_key[0], get_image_from_file(top_key[0])) for top_key in top_rank]
 
 
-def get_image_from_text(text, n_images=6):
+def get_image_from_text(text):
     """ Return a generated image from text
     """
-    resp = openai.Image.create(prompt=text, n=n_images, size=SIZE)
+    resp = openai.Image.create(prompt=text, n=N_IMAGES, size=SIZE)
     data = resp['data']
     image_url_list = [x['url'] for x in data]
     return [get_image_from_url(image_url) for image_url in image_url_list]
@@ -173,7 +174,7 @@ def _image_as_bytes(image):
 
 def get_image_variations(image):
     image_bytes = _image_as_bytes(image)
-    resp = openai.Image.create_variation(image=image_bytes, n=6, size=SIZE)
+    resp = openai.Image.create_variation(image=image_bytes, n=N_IMAGES, size=SIZE)
     data = resp['data']
     image_url_list = [x['url'] for x in data]
     return [get_image_from_url(image_url) for image_url in image_url_list]
